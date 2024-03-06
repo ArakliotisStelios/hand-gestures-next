@@ -14,7 +14,6 @@ export default function Home() {
   const canvasRef = useRef() as MutableRefObject<HTMLCanvasElement>;
   const [results2, setResults2] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [count, setCount] = useState(0);
 
   const [gestureRecognizer, setGestureRecognizer] =
     useState<GestureRecognizer>();
@@ -89,7 +88,19 @@ export default function Home() {
   }, [loading]);
 
   function hasGetUserMedia() {
-    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    return navigator.permissions.query({ name: "camera" }).then((res) => {
+      if (
+        res.state == "granted" &&
+        !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+      ) {
+        // has permission
+        return true;
+      } else {
+        alert("Please enable camera permission and then reload");
+        return false;
+      }
+    });
+    // return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   }
   // Enable the live webcam view and start detection.
   function enableCam() {
@@ -199,7 +210,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 justify-start from-emerald-100	 bg-gradient-to-t to-teal-200	">
+    <main className="flex min-h-screen flex-col items-center p-24 justify-start from-emerald-100 bg-gradient-to-t to-teal-200	">
       <section id="demos" className="flex flex-row">
         <div id="liveView" className="videoView">
           <p id="gesture_output" className="output" />
